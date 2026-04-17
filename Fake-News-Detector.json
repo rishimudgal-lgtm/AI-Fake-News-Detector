@@ -1,0 +1,264 @@
+{
+  "name": "Fake-News-Detector",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an autonomous fact-checking AI agent operating inside an automated workflow.\n\nYour task is to analyze a given news statement or query and return a structured, machine-readable JSON object.\n\nSTRICT OUTPUT RULES:\n- Output ONLY valid JSON (no markdown, no explanation, no text before or after)\n- DO NOT wrap the JSON in quotes\n- DO NOT include backticks\n- Ensure the JSON is directly parseable\n\nREQUIRED JSON FORMAT:\n{\n  \"News\": string,\n  \"Source\": string,\n  \"Verdict\": \"FAKE\" | \"MISLEADING\" | \"CREDIBLE\",\n  \"Confidence\": string,\n  \"Reasons\": string,\n  \"Fact Check\": string\n}\n\nFIELD INSTRUCTIONS:\n- News → Repeat the exact user input\n- Source → Mention likely source (e.g., \"Social Media\", \"News Report\", \"Unknown\")\n- Verdict → Must be one of: FAKE, MISLEADING, CREDIBLE\n- Confidence → Percentage (e.g., \"85%\")\n- Reasons → Short justification (1–2 lines)\n- Fact Check → Clear corrected explanation based on known facts\n\nBEHAVIOR RULES:\n- If information is uncertain, lean toward MISLEADING instead of guessing\n- Do not hallucinate specific sources if unknown\n- Keep responses concise but factual\n- Never leave any field empty\n\nVALIDATION BEFORE OUTPUT:\n- Ensure all 6 fields exist\n- Ensure valid JSON syntax\n- Ensure no trailing commas\n\nNow process the input."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "0c37d1d1-029e-4cc0-b9fb-6bba615c454f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        224
+      ],
+      "id": "11a62b5e-5343-44b7-97cb-f17a907d8235",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "YR9METgLHya6NJJm",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        224
+      ],
+      "id": "de3d31a3-0650-4cd3-9ceb-773b0db8eb5c",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        656,
+        224
+      ],
+      "id": "7ce825bf-bb01-4ccd-81bb-7c0c76f17b23",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "xNe9VTi2X7LQP8Bu",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1z0wBihydKZQF-n6eE5DMtiWu2hbLI1E97DVNlrJIuFc",
+          "mode": "list",
+          "cachedResultName": "Scam detector",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z0wBihydKZQF-n6eE5DMtiWu2hbLI1E97DVNlrJIuFc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z0wBihydKZQF-n6eE5DMtiWu2hbLI1E97DVNlrJIuFc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "News": "={{ JSON.parse($json[\"output\"]).News }}",
+            "Source": "={{ JSON.parse($json[\"output\"]).Source }}",
+            "Verdict": "={{ JSON.parse($json[\"output\"]).Verdict }}",
+            "Confidence": "={{ JSON.parse($json[\"output\"]).Confidence }}",
+            "Reasons": "={{ JSON.parse($json[\"output\"]).Reasons }}",
+            "Fact Check": "={{ JSON.parse($json[\"output\"])[\"Fact Check\"] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "News",
+              "displayName": "News",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Verdict",
+              "displayName": "Verdict",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confidence",
+              "displayName": "Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reasons",
+              "displayName": "Reasons",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fact Check",
+              "displayName": "Fact Check",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        864,
+        0
+      ],
+      "id": "e6dfaac5-08d0-4693-8692-4fea7eb0bef6",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LU6XrjJ0TsaHdEvs",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        176,
+        0
+      ],
+      "id": "f1c14262-c67d-4fbc-b6e0-6e20a053d502",
+      "name": "When chat message received",
+      "webhookId": "744ea427-13bb-4a02-ada9-d5b4097bf7b5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1034cd92-f4a0-4fec-9e9b-333a7a413956",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14019d44ea9e81fbaf6721832e9704c33be137770572cebaca397dd1acf1b21f"
+  },
+  "id": "EjqrvwIepo7cxqBh",
+  "tags": []
+}
