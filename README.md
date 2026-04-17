@@ -65,11 +65,11 @@ README.md            → Project documentation
 
 ### Workflow
 
-![Workflow](screenshots/workflow.png)
+![Workflow](Screenshots/Workflow.png)
 
 ### Google Sheets Output
 
-![Sheet Output](screenshots/sheet-output.png)
+![Sheet Output](Screenshots/Sheet-Output.png)
 
 ---
 
